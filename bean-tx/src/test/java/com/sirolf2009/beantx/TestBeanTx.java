@@ -38,7 +38,7 @@ public class TestBeanTx {
 	
 	public void CRUD(String... labels) {
 		TestBean testBean = TestBean.GetDefaultBean();
-		long id = beanTx.pushBean(testBean, "This", "is", "a", "test", "bean");
+		long id = beanTx.pushBean(testBean, labels);
 		TestBean pulledBean = (TestBean) beanTx.pullBean(id);
 		assertEquals(testBean, pulledBean);
 		assertEquals(id, beanTx.getCache().getIDFromBean(testBean));
