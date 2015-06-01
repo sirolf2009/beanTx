@@ -47,27 +47,6 @@ public class TestBean {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		TestBean other = (TestBean) obj;
-		if (ez == null) {
-			if (other.ez != null)
-				return false;
-		} else if (!ez.equals(other.ez))
-			return false;
-		if (!Arrays.equals(ezArray, other.ezArray))
-			return false;
-		if (ezByte != other.ezByte)
-			return false;
-		return true;
-	}
-
-	@Override
 	public String toString() {
 		return "TestBean [ez=" + ez + ", ezByte=" + ezByte + ", ezArray="
 				+ Arrays.toString(ezArray) + "]";

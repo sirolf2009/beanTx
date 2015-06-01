@@ -50,7 +50,15 @@ public class BeanCache {
 		for(Field field : bean.getClass().getDeclaredFields()) {
 			if(field.isAnnotationPresent(GraphID.class)) {
 				try {
+					boolean modified = false;
+					if(!field.isAccessible()) {
+						field.setAccessible(true);
+						modified = true;
+					}
 					field.set(bean, ID);
+					if(modified) {
+						field.setAccessible(false);
+					}
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {

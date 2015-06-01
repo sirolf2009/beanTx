@@ -31,7 +31,7 @@ public class TestBeanTxUtil {
 		props.put("age", 19);
 		props.put("legs", new String[] {"left", "right"});
 		
-		assertEquals("MERGE (n:testNode:testLabel { age: {age}, name: {name}, legs: {legs}}) RETURN id(n)", BeanUtil.generateMergeQuery(props, "testNode", "testLabel"));
+		assertEquals("MERGE (n:testNode:testLabel { age: {age}, name: {name}, legs: {legs}}) RETURN id(n)", BeanUtil.generateCreateQuery(props, "testNode", "testLabel"));
 	}
 
 }

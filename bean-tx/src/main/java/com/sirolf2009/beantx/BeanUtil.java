@@ -51,16 +51,16 @@ public class BeanUtil {
 		Result result;
 		long id;
 		try(Transaction tx = beanTx.getService().beginTx()) {
-			result = beanTx.getService().execute(generateMergeQuery(props, labels), props);
+			result = beanTx.getService().execute(generateCreateQuery(props, labels), props);
 			id = (Long) result.columnAs("id(n)").next();
 			tx.success();
 		}
 		return id;
 	}
 
-	public static String generateMergeQuery(Map<String, Object> props, String... labels) {
+	public static String generateCreateQuery(Map<String, Object> props, String... labels) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(String.format("MERGE (n%s {", combineLabels(labels)));
+		builder.append(String.format("CREATE (n%s {", combineLabels(labels)));
 		for(String key : props.keySet()) {
 			builder.append(String.format(" %s: {%s},", key, key));
 		}

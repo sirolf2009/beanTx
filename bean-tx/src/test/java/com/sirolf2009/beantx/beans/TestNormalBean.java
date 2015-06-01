@@ -1,7 +1,10 @@
 package com.sirolf2009.beantx.beans;
 
+import com.sirolf2009.beantx.GraphID;
+
 public class TestNormalBean {
 	
+	@GraphID private long graphId;
 	private String name;
 	private TestBean bean1;
 	private TestBean bean2;
@@ -12,6 +15,14 @@ public class TestNormalBean {
 		bean.setBean1(TestBean.GetDefaultBean());
 		bean.setBean2(TestBean.GetDefaultBean());
 		return bean;
+	}
+
+	public long getGraphId() {
+		return graphId;
+	}
+
+	public void setGraphId(long graphId) {
+		this.graphId = graphId;
 	}
 
 	public String getName() {
@@ -36,33 +47,6 @@ public class TestNormalBean {
 
 	public void setBean2(TestBean bean2) {
 		this.bean2 = bean2;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		TestNormalBean other = (TestNormalBean) obj;
-		if (bean1 == null) {
-			if (other.bean1 != null)
-				return false;
-		} else if (!bean1.equals(other.bean1))
-			return false;
-		if (bean2 == null) {
-			if (other.bean2 != null)
-				return false;
-		} else if (!bean2.equals(other.bean2))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
 	}
 
 	@Override

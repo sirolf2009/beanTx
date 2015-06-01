@@ -5,7 +5,9 @@ import static com.sirolf2009.beantx.BeanUtil.isPrimitive;
 import static com.sirolf2009.beantx.BeanUtil.pushMap;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -16,6 +18,8 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.ResourceIterator;
+import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 
 public class BeanTx {
@@ -113,13 +117,26 @@ public class BeanTx {
 
 	public void deleteBean(Object bean) {
 		long ID = getCache().getIDFromBean(bean);
+		if(ID == -1) {
+			return;
+		}
 		try(Transaction tx = getService().beginTx()) {
+			Map<String, Object> children = describe(bean).get(OBJECTS);
+			Node node = getService().getNodeById(ID);
+			for(Entry<String, Object> childDescription : children.entrySet()) {
+				for(Relationship relation : node.getRelationships(DynamicRelationshipType.withName(childDescription.getKey()))) {
+					relation.delete();
+				}
+				deleteBean(childDescription.getValue());
+			}
 			getService().getNodeById(ID).delete();
 			getCache().removeIDFromCache(ID);
 			tx.success();
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
-	
+
 	public void updateBean(Object bean) {
 		long ID = getCache().getIDFromBean(bean);
 		try(Transaction tx = getService().beginTx()) {
@@ -141,6 +158,33 @@ public class BeanTx {
 			getCache().cacheBeanID(ID, bean);
 			tx.success();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getAll(Class<T> clazz) {
+		List<T> objects = new ArrayList<T>();
+		Map<String, String> classContainer = new HashMap<String, String>();
+		classContainer.put("class", clazz.getName());
+		Map<String, Object> props = new HashMap<String, Object>();
+		Result result = getService().execute("MATCH (n {props}) RETURN id(n)", props);
+		ResourceIterator<Long> IDs = result.columnAs("id(n)");
+		while(IDs.hasNext()) {
+			objects.add((T) pullBean(IDs.next()));
+		}
+		return objects;
+	}
+
+	public boolean hasObject(Object bean) {
+		return getIDFromBean(bean) != -1;
+	}
+
+	public long getIDFromBean(Object bean) {
+		if(getCache().getIDFromBean(bean) != -1) {
+			return getCache().getIDFromBean(bean);
+		} else {
+			//TODO traverse database for bean
+		}
+		return -1;
 	}
 
 	public GraphDatabaseService getService() {
